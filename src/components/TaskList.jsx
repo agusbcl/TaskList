@@ -1,17 +1,18 @@
-import { MdDelete } from "react-icons/md";
-import { FaCheckCircle } from "react-icons/fa";
+import Task from "./Task";
 
 function TaskList({ tasks, onDeleteTask, onChangeStatus }) {
-const msg = (text) => alert(text);
   return (
-    <div>
-      <ul>
-        {tasks.map(t => <li key={t.id}>{t.id.slice(0, 5)} - {t.description} - {t.
-        isCompleted ? "terminado" : "pendiente"} <MdDelete 
-        onClick={() => onDeleteTask(t.id)} />
-        <FaCheckCircle onClick={()=>onChangeStatus(t.id)} />
-        </li>)}      </ul>
-    </div>
+    <table>
+      <tbody>
+      <tr>
+        <th>Id</th>
+        <th>Tarea</th>
+        <th>Eliminar</th>
+        <th>Estado</th>
+      </tr>
+        {tasks.map(t => <Task key={t.id} task={t} onDeleteTask={onDeleteTask} onChangeStatus={onChangeStatus} />)}
+      </tbody>
+    </table>
   );
 }
 

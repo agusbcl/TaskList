@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import Input from './components/Input';
 import TaskList from './components/TaskList';
 import SearchBar from './components/SearchBar';
+import TaskForm from './components/TaskForm';
+
+function getLocalStorageTasks() {
+  const storedTasks = window.localStorage.getItem("tasks");
+  const tasks = JSON.parse(storedTasks);
+  return tasks ? tasks : [];
+}
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(getLocalStorageTasks());
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  //función para agregar una nueva tarea, recibe la descripción que viene
-  //del evento que se dispara cuando le damos "Crear" en el componente Input
   const handleAddTask = (description) => {
     const newTask = {
       id: self.crypto.randomUUID(),
@@ -21,18 +25,16 @@ function App() {
     setFilteredTasks([...filteredTasks, newTask]);
   };
 
-  useEffect(()=>{
-    if(tasks.length) window.localStorage.setItem("tasks", JSON.stringify(tasks))
-  },[tasks])
+  useEffect(() => {
+    window.localStorage.setItem("tasks", JSON.stringify(tasks))
+  }, [tasks]);
 
-  //función para borrar una tarea habiendo recibido el id
   const handleDelete = (id) => {
     const remainingTasks = tasks.filter(t => t.id !== id);
     setTasks([...remainingTasks]);
     setFilteredTasks([...remainingTasks]);
   };
 
-  //funcion que modifica el estado de una tarea
   const handleChangeStatus = (id) => {
     const updatedTasks = tasks.map(t => t.id === id ?
       { ...t, isCompleted: !t.isCompleted }
@@ -51,21 +53,18 @@ function App() {
   };
 
   return (
-    <>
+    <main className='container'>
       <h1>Lista de Tareas</h1>
       <SearchBar onSearch={query => handleSearchQuery(query)} />
-      <p>Query: {searchQuery}</p>
-      <Input onAddTask={(description) => handleAddTask(description)} />
-      <TaskList onDeleteTask={(id) => handleDelete(id)} tasks={filteredTasks}
-        onChangeStatus={(id) => handleChangeStatus(id)}
-      />
-    </>
-  );
 
+      <TaskForm onAddTask={(description) => handleAddTask(description)} />
+      {tasks &&
+        <TaskList onDeleteTask={(id) => handleDelete(id)} tasks={filteredTasks}
+          onChangeStatus={(id) => handleChangeStatus(id)}
+        />
+      }
+    </main>
+  );
 };
 
 export default App;
-
-
-
-
